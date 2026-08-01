@@ -1,0 +1,6 @@
+{
+  "name": "Cyber Forensics Lab",
+  "description": "Offline rule-based digital forensics and ethical hacking platform for analyzing phishing, malware, and financial fraud with case reference library and report generation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
