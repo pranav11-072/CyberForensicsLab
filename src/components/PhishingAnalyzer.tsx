@@ -31,7 +31,7 @@ interface PhishingAnalyzerProps {
 export const PhishingAnalyzer: React.FC<PhishingAnalyzerProps> = ({ onSaveEvidence, savedResults }) => {
   const phishingPresets = SAMPLE_PRESETS.filter((p) => p.module === 'phishing');
   
-  const [inputText, setInputText] = useState<string>(phishingPresets[0].content);
+  const [inputText, setInputText] = useState<string>(phishingPresets[0]?.content || '');
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [copied, setCopied] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -126,26 +126,28 @@ export const PhishingAnalyzer: React.FC<PhishingAnalyzerProps> = ({ onSaveEviden
       </div>
 
       {/* Preset Selector Banner */}
-      <div className="bg-[#0E0E0E] border border-zinc-900 p-5 space-y-3">
-        <div className="text-[10px] font-black font-mono tracking-[0.2em] uppercase text-zinc-400 flex items-center gap-2">
-          <Info className="w-3.5 h-3.5 text-orange-600" />
-          <span>LOAD PRESET REAL-WORLD TEST CASES:</span>
+      {phishingPresets.length > 0 && (
+        <div className="bg-[#0E0E0E] border border-zinc-900 p-5 space-y-3">
+          <div className="text-[10px] font-black font-mono tracking-[0.2em] uppercase text-zinc-400 flex items-center gap-2">
+            <Info className="w-3.5 h-3.5 text-orange-600" />
+            <span>LOAD PRESET REAL-WORLD TEST CASES:</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {phishingPresets.map((preset) => (
+              <button
+                key={preset.id}
+                onClick={() => handleSelectPreset(preset.content)}
+                className="text-left p-3 bg-[#050505] hover:border-orange-600 border border-zinc-800 text-xs space-y-1 transition-colors group cursor-pointer"
+              >
+                <div className="font-bold uppercase tracking-tight text-white group-hover:text-orange-500 truncate font-mono">
+                  {preset.title}
+                </div>
+                <div className="text-[10px] text-zinc-500 font-mono truncate">{preset.subtitle}</div>
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {phishingPresets.map((preset) => (
-            <button
-              key={preset.id}
-              onClick={() => handleSelectPreset(preset.content)}
-              className="text-left p-3 bg-[#050505] hover:border-orange-600 border border-zinc-800 text-xs space-y-1 transition-colors group cursor-pointer"
-            >
-              <div className="font-bold uppercase tracking-tight text-white group-hover:text-orange-500 truncate font-mono">
-                {preset.title}
-              </div>
-              <div className="text-[10px] text-zinc-500 font-mono truncate">{preset.subtitle}</div>
-            </button>
-          ))}
-        </div>
-      </div>
+      )}
 
       {/* Main Analysis Input & Action */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

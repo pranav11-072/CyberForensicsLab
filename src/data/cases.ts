@@ -64,9 +64,9 @@ export const CYBER_CASES: CyberCase[] = [
       'Mass distribution of file encryption payload via Group Policy Objects (GPO)',
     ],
     forensicArtifacts: [
-      'vssadmin.exe delete shadows /all /quiet command executed in event logs',
-      'Encrypted files appended with .locked and drops of decrypt_instructions.html',
-      'Mimikatz LSASS memory dump artifacts found on 2 secondary server nodes',
+      'Backup shadow copy deletion utility commands identified in system logs',
+      'Encrypted files appended with status extension and drops of recovery instructions',
+      'Memory extraction utility artifacts found on secondary server nodes',
     ],
     mitigationLessons: [
       'Enforce network segmentation between clinical medical devices and administrative IT',

@@ -31,7 +31,7 @@ interface FraudScannerProps {
 export const FraudScanner: React.FC<FraudScannerProps> = ({ onSaveEvidence, savedResults }) => {
   const fraudPresets = SAMPLE_PRESETS.filter((p) => p.module === 'fraud');
 
-  const [inputText, setInputText] = useState<string>(fraudPresets[0].content);
+  const [inputText, setInputText] = useState<string>(fraudPresets[0]?.content || '');
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [copied, setCopied] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
@@ -147,26 +147,28 @@ export const FraudScanner: React.FC<FraudScannerProps> = ({ onSaveEvidence, save
       </div>
 
       {/* Preset Selector */}
-      <div className="bg-[#0E0E0E] border border-zinc-900 p-5 space-y-3">
-        <div className="text-[10px] font-black font-mono tracking-[0.2em] uppercase text-zinc-400 flex items-center gap-2">
-          <Info className="w-3.5 h-3.5 text-orange-600" />
-          <span>LOAD FRAUD SCENARIO SAMPLES:</span>
+      {fraudPresets.length > 0 && (
+        <div className="bg-[#0E0E0E] border border-zinc-900 p-5 space-y-3">
+          <div className="text-[10px] font-black font-mono tracking-[0.2em] uppercase text-zinc-400 flex items-center gap-2">
+            <Info className="w-3.5 h-3.5 text-orange-600" />
+            <span>LOAD FRAUD SCENARIO SAMPLES:</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {fraudPresets.map((preset) => (
+              <button
+                key={preset.id}
+                onClick={() => handleSelectPreset(preset.content)}
+                className="text-left p-3 bg-[#050505] hover:border-orange-600 border border-zinc-800 text-xs space-y-1 transition-colors group cursor-pointer"
+              >
+                <div className="font-bold uppercase tracking-tight text-white group-hover:text-orange-500 truncate font-mono">
+                  {preset.title}
+                </div>
+                <div className="text-[10px] text-zinc-500 font-mono truncate">{preset.subtitle}</div>
+              </button>
+            ))}
+          </div>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {fraudPresets.map((preset) => (
-            <button
-              key={preset.id}
-              onClick={() => handleSelectPreset(preset.content)}
-              className="text-left p-3 bg-[#050505] hover:border-orange-600 border border-zinc-800 text-xs space-y-1 transition-colors group cursor-pointer"
-            >
-              <div className="font-bold uppercase tracking-tight text-white group-hover:text-orange-500 truncate font-mono">
-                {preset.title}
-              </div>
-              <div className="text-[10px] text-zinc-500 font-mono truncate">{preset.subtitle}</div>
-            </button>
-          ))}
-        </div>
-      </div>
+      )}
 
       {/* Analysis Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
