@@ -13,6 +13,13 @@ import {
   Clock,
   CheckCircle2,
   Bot,
+  Binary,
+  Radio,
+  ShieldCheck,
+  FileCode,
+  Globe,
+  Flame,
+  Layers,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -34,12 +41,18 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, savedEv
     return () => clearInterval(interval);
   }, []);
 
-  const navItems = [
+  const coreNavItems = [
     { id: 'overview', label: 'Overview', icon: Activity },
     { id: 'phishing', label: 'Phishing', icon: Fish },
     { id: 'malware', label: 'Malware', icon: Bug },
     { id: 'fraud', label: 'Fraud', icon: CreditCard },
-    { id: 'chatbot', label: 'AI Assistant', icon: Bot, isAi: true },
+    { id: 'decoders', label: 'Decoders', icon: Binary, isNew: true },
+    { id: 'timeline', label: 'Timeline', icon: Clock, isNew: true },
+    { id: 'network', label: 'Network Flow', icon: Radio, isNew: true },
+    { id: 'hashes', label: 'Hash Matcher', icon: ShieldCheck, isNew: true },
+    { id: 'yara', label: 'YARA Builder', icon: FileCode, isNew: true },
+    { id: 'intel', label: 'Threat Feed', icon: Globe },
+    { id: 'chatbot', label: 'AI Copilot', icon: Bot, isAi: true },
     { id: 'cases', label: 'Cases', icon: BookOpen },
     { id: 'evidence', label: 'Vault', icon: FileCheck, badge: savedEvidenceCount },
     { id: 'rules', label: 'Rules', icon: Cpu },
@@ -57,10 +70,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, savedEv
           </span>
           <span className="text-zinc-800">|</span>
           <span className="flex items-center text-zinc-300 font-mono">
-            <WifiOff className="w-3 h-3 mr-1 text-orange-600" /> AIR-GAPPED // ZERO LEAKS
+            <WifiOff className="w-3 h-3 mr-1 text-orange-600" /> AIR-GAPPED // LOCAL DECODERS ACTIVE
           </span>
           <span className="hidden md:inline text-zinc-800">|</span>
-          <span className="hidden md:inline text-zinc-400 font-mono">36 DETERMINISTIC RULES</span>
+          <span className="hidden md:inline text-zinc-400 font-mono">45+ DETERMINISTIC HEURISTIC RULES</span>
         </div>
 
         <div className="flex items-center space-x-4 font-mono text-zinc-400">
@@ -80,7 +93,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, savedEv
           {/* Logo & Title */}
           <div
             onClick={() => setActiveTab('overview')}
-            className="flex items-center space-x-3 cursor-pointer group"
+            className="flex items-center space-x-3 cursor-pointer group shrink-0"
           >
             <div className="w-10 h-10 bg-white text-black flex items-center justify-center font-black group-hover:bg-orange-600 group-hover:text-white transition-colors">
               <ShieldAlert className="w-6 h-6" />
@@ -90,21 +103,21 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, savedEv
                 CFL<span className="text-orange-600">.</span>FORENSICS
               </div>
               <div className="text-[9px] font-bold tracking-[0.25em] uppercase text-zinc-500 mt-1">
-                OFFLINE TRIAGE & THREAT ANALYSIS
+                ENTERPRISE INCIDENT TRIAGE & REVERSE ENGINEERING
               </div>
             </div>
           </div>
 
           {/* Desktop Navigation Tabs */}
-          <nav className="hidden lg:flex items-center gap-6">
-            {navItems.map((item) => {
+          <nav className="hidden xl:flex items-center gap-4 overflow-x-auto py-2">
+            {coreNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
               return (
                 <button
                   key={item.id}
                   onClick={() => setActiveTab(item.id)}
-                  className={`flex items-center space-x-2 py-2 text-[11px] font-bold tracking-[0.2em] uppercase transition-all relative ${
+                  className={`flex items-center space-x-1.5 py-1.5 text-[10px] font-bold tracking-wider uppercase transition-all whitespace-nowrap relative ${
                     isActive
                       ? 'text-white border-b-2 border-orange-600'
                       : 'text-zinc-500 hover:text-zinc-200'
@@ -112,8 +125,13 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, savedEv
                 >
                   <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-orange-600' : 'text-zinc-500'}`} />
                   <span>{item.label}</span>
+                  {item.isNew && (
+                    <span className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-[8px] px-1 py-0.2 rounded font-mono font-bold">
+                      NEW
+                    </span>
+                  )}
                   {item.badge !== undefined && item.badge > 0 && (
-                    <span className="ml-1 bg-orange-600 text-white font-black text-[9px] px-1.5 py-0.2 rounded-none">
+                    <span className="ml-0.5 bg-orange-600 text-white font-black text-[9px] px-1.5 py-0.2 rounded-none">
                       {item.badge}
                     </span>
                   )}
@@ -123,16 +141,16 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, savedEv
           </nav>
         </div>
 
-        {/* Mobile Nav Tabs Bar */}
-        <div className="lg:hidden flex items-center gap-2 overflow-x-auto py-2 border-t border-zinc-900 no-scrollbar">
-          {navItems.map((item) => {
+        {/* Compact / Mobile Nav Tabs Bar */}
+        <div className="xl:hidden flex items-center gap-2 overflow-x-auto py-2 border-t border-zinc-900 no-scrollbar">
+          {coreNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
             return (
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`flex items-center space-x-1.5 px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase whitespace-nowrap transition-all ${
+                className={`flex items-center space-x-1.5 px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase whitespace-nowrap transition-all ${
                   isActive
                     ? 'bg-white text-black font-black'
                     : 'bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800'

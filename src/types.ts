@@ -2,6 +2,15 @@ export type ModuleType = 'phishing' | 'malware' | 'fraud';
 
 export type SeverityLevel = 'SAFE' | 'LOW' | 'SUSPICIOUS' | 'HIGH_RISK' | 'CRITICAL';
 
+export type KillChainPhase =
+  | 'RECONNAISSANCE'
+  | 'WEAPONIZATION'
+  | 'DELIVERY'
+  | 'EXPLOITATION'
+  | 'INSTALLATION'
+  | 'COMMAND_CONTROL'
+  | 'ACTIONS_OBJECTIVES';
+
 export interface ForensicRule {
   id: string;
   name: string;
@@ -99,4 +108,79 @@ export interface QuizQuestion {
   options: { id: string; text: string; isCorrect: boolean }[];
   explanation: string;
   legalContext?: string;
+}
+
+// TIMELINE TYPES
+export interface TimelineEvent {
+  id: string;
+  timestamp: string;
+  title: string;
+  description: string;
+  phase: KillChainPhase;
+  severity: SeverityLevel;
+  source: string;
+  mitreTactic?: string;
+  mitreTechniqueId?: string;
+  artifacts?: string[];
+  investigator?: string;
+}
+
+// NETWORK INSPECTOR TYPES
+export interface NetworkLogEntry {
+  id: string;
+  timestamp: string;
+  srcIp: string;
+  srcPort?: number;
+  destIp: string;
+  destPort: number;
+  protocol: 'TCP' | 'UDP' | 'HTTP' | 'HTTPS' | 'DNS' | 'ICMP' | 'OTHER';
+  length?: number;
+  domain?: string;
+  uri?: string;
+  method?: string;
+  info?: string;
+  anomalousScore: number;
+  reasons: string[];
+  severity: SeverityLevel;
+}
+
+// HASH & IOC TYPES
+export interface KnownThreatIOC {
+  id: string;
+  name: string;
+  family: string;
+  type: 'RANSOMWARE' | 'TROJAN' | 'BOTNET' | 'SPYWARE' | 'APT_PAYLOAD' | 'CRYPTOJACKER' | 'STEALER';
+  threatActor?: string;
+  md5: string;
+  sha1: string;
+  sha256: string;
+  description: string;
+  firstSeen: string;
+  severity: SeverityLevel;
+  mitreTechniques: string[];
+  indicators: string[];
+  remediation: string;
+}
+
+// YARA & CUSTOM RULES TYPES
+export interface CustomYaraRule {
+  id: string;
+  ruleName: string;
+  meta: {
+    author: string;
+    description: string;
+    date: string;
+    severity: SeverityLevel;
+    reference?: string;
+    mitreId?: string;
+  };
+  strings: {
+    id: string;
+    identifier: string;
+    value: string;
+    type: 'text' | 'hex' | 'regex';
+    modifiers: string; // e.g. 'nocase', 'wide ascii'
+  }[];
+  condition: string;
+  rawYaraOutput?: string;
 }

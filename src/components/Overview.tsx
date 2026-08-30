@@ -199,6 +199,113 @@ export const Overview: React.FC<OverviewProps> = ({
         </div>
       </div>
 
+      {/* Advanced Forensic Suite Section */}
+      <div className="space-y-5">
+        <div className="flex items-center gap-3">
+          <span className="w-8 h-[1px] bg-cyan-500"></span>
+          <h2 className="text-base font-black tracking-widest uppercase text-cyan-400 font-mono">
+            Advanced DFIR & Reverse Engineering Suite
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {/* Decoder Card */}
+          <div
+            onClick={() => setActiveTab('decoders')}
+            className="bg-[#0E0E0E] border border-zinc-900 hover:border-cyan-500/60 p-5 cursor-pointer transition-all hover:-translate-y-0.5 group flex flex-col justify-between"
+          >
+            <div className="space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-cyan-400 flex items-center justify-center group-hover:bg-cyan-500 group-hover:text-black transition">
+                <span className="font-mono font-bold text-xs">0101</span>
+              </div>
+              <h3 className="font-bold text-sm text-white font-mono">Payload Decoders</h3>
+              <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
+                Base64, Hex, XOR brute-forcer, entropy calculation & PowerShell de-obfuscator.
+              </p>
+            </div>
+            <div className="text-[10px] font-mono text-cyan-400 mt-4 flex items-center gap-1 font-bold">
+              <span>LAUNCH TOOL</span> →
+            </div>
+          </div>
+
+          {/* Timeline Card */}
+          <div
+            onClick={() => setActiveTab('timeline')}
+            className="bg-[#0E0E0E] border border-zinc-900 hover:border-orange-500/60 p-5 cursor-pointer transition-all hover:-translate-y-0.5 group flex flex-col justify-between"
+          >
+            <div className="space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-orange-950/40 border border-orange-500/30 text-orange-400 flex items-center justify-center group-hover:bg-orange-500 group-hover:text-black transition">
+                <span className="font-mono font-bold text-xs">KILL</span>
+              </div>
+              <h3 className="font-bold text-sm text-white font-mono">Incident Timeline</h3>
+              <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
+                Chronological event reconstruction with Lockheed Martin Kill Chain mapping.
+              </p>
+            </div>
+            <div className="text-[10px] font-mono text-orange-400 mt-4 flex items-center gap-1 font-bold">
+              <span>LAUNCH TOOL</span> →
+            </div>
+          </div>
+
+          {/* Network Inspector Card */}
+          <div
+            onClick={() => setActiveTab('network')}
+            className="bg-[#0E0E0E] border border-zinc-900 hover:border-emerald-500/60 p-5 cursor-pointer transition-all hover:-translate-y-0.5 group flex flex-col justify-between"
+          >
+            <div className="space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-black transition">
+                <span className="font-mono font-bold text-xs">FLOW</span>
+              </div>
+              <h3 className="font-bold text-sm text-white font-mono">Network Inspector</h3>
+              <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
+                Zeek/Suricata alert log parser, DGA detection, lateral SMB & C2 beacon triage.
+              </p>
+            </div>
+            <div className="text-[10px] font-mono text-emerald-400 mt-4 flex items-center gap-1 font-bold">
+              <span>LAUNCH TOOL</span> →
+            </div>
+          </div>
+
+          {/* Hash Reputation Card */}
+          <div
+            onClick={() => setActiveTab('hashes')}
+            className="bg-[#0E0E0E] border border-zinc-900 hover:border-purple-500/60 p-5 cursor-pointer transition-all hover:-translate-y-0.5 group flex flex-col justify-between"
+          >
+            <div className="space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-purple-950/40 border border-purple-500/30 text-purple-400 flex items-center justify-center group-hover:bg-purple-500 group-hover:text-black transition">
+                <span className="font-mono font-bold text-xs">HASH</span>
+              </div>
+              <h3 className="font-bold text-sm text-white font-mono">Hash Matcher</h3>
+              <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
+                SHA-256 integrity calculation & cross-referencing against verified ransomware IOCs.
+              </p>
+            </div>
+            <div className="text-[10px] font-mono text-purple-400 mt-4 flex items-center gap-1 font-bold">
+              <span>LAUNCH TOOL</span> →
+            </div>
+          </div>
+
+          {/* YARA Builder Card */}
+          <div
+            onClick={() => setActiveTab('yara')}
+            className="bg-[#0E0E0E] border border-zinc-900 hover:border-amber-500/60 p-5 cursor-pointer transition-all hover:-translate-y-0.5 group flex flex-col justify-between"
+          >
+            <div className="space-y-3">
+              <div className="w-10 h-10 rounded-lg bg-amber-950/40 border border-amber-500/30 text-amber-400 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-black transition">
+                <span className="font-mono font-bold text-xs">YARA</span>
+              </div>
+              <h3 className="font-bold text-sm text-white font-mono">YARA Builder</h3>
+              <p className="text-[11px] text-zinc-400 leading-relaxed font-sans">
+                Author heuristic regex rules, test live in sandbox, and export .YAR signature files.
+              </p>
+            </div>
+            <div className="text-[10px] font-mono text-amber-400 mt-4 flex items-center gap-1 font-bold">
+              <span>LAUNCH TOOL</span> →
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Live Search-Grounded Threat Intelligence Feed */}
       <ThreatIntelligenceFeed />
 
