@@ -1,11 +1,20 @@
 import express from "express";
 import path from "path";
-import { createServer as createViteServer } from "vite";
+import fs from "fs";
 import { GoogleGenAI } from "@google/genai";
 
 async function startServer() {
   const app = express();
-  const PORT = 3000;
+  
+  // Handle port: In dev mode inside AI Studio container, nginx proxies to 3000.
+  // In production Cloud Run deployment, the container listens on process.env.PORT (8080).
+  const portArgIdx = process.argv.indexOf("--port");
+  let PORT = 3000;
+  if (portArgIdx !== -1 && process.argv[portArgIdx + 1]) {
+    PORT = parseInt(process.argv[portArgIdx + 1], 10);
+  } else if (process.env.NODE_ENV === "production" || !process.env.APPLET_ID) {
+    PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+  }
 
   app.use(express.json({ limit: "10mb" }));
 
@@ -282,19 +291,32 @@ Provide a structured breakdown including:
     }
   });
 
-  // Vite Middleware for development mode
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), "dist");
+  // Vite Middleware for development mode vs static files for production
+  const distPath = path.join(process.cwd(), "dist");
+  const isProduction = process.env.NODE_ENV === "production" || (!process.env.APPLET_ID && fs.existsSync(path.join(distPath, "index.html")));
+
+  if (isProduction && fs.existsSync(path.join(distPath, "index.html"))) {
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
       res.sendFile(path.join(distPath, "index.html"));
     });
+  } else {
+    try {
+      const { createServer: createViteServer } = await import("vite");
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+    } catch (viteErr) {
+      console.warn("Vite middleware could not be loaded, falling back to static files:", viteErr);
+      if (fs.existsSync(distPath)) {
+        app.use(express.static(distPath));
+        app.get("*", (req, res) => {
+          res.sendFile(path.join(distPath, "index.html"));
+        });
+      }
+    }
   }
 
   app.listen(PORT, "0.0.0.0", () => {
