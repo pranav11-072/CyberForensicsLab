@@ -150,7 +150,7 @@ export default function App() {
               </div>
               <span>ASK AEGIS-AI</span>
               <span className="bg-orange-100 text-orange-800 text-[9px] font-black px-1.5 py-0.5">
-                GEMINI 3.6
+                AI COPILOT
               </span>
             </button>
           )}

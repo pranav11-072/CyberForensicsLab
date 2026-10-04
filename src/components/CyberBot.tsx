@@ -35,28 +35,46 @@ interface CyberBotProps {
 
 const QUICK_PROMPTS = [
   {
-    title: 'Deconstruct Email Header',
-    icon: Terminal,
+    title: 'Triage LockBit Ransomware Attack',
+    icon: Shield,
+    badge: 'CRITICAL',
     prompt:
-      'Explain how to analyze Received: headers and SPF/DKIM/DMARC alignment in suspicious email forensics.',
+      'We have detected LockBit 3.0 executing vssadmin delete shadows and creating .lockbit files on an active Domain Controller. Provide an immediate step-by-step incident response containment and triage protocol.',
   },
   {
-    title: 'PowerShell Obfuscation',
-    icon: FileCode,
+    title: 'AiTM Reverse-Proxy Phishing Triage',
+    icon: Terminal,
+    badge: 'CRITICAL',
     prompt:
-      'What are the common indicators of obfuscated PowerShell commands (e.g. EncodedCommand, IEX, DownloadString)?',
+      'An executive clicked an Evilginx-style reverse-proxy phishing link that intercepted their session cookies and bypassed FIDO2 MFA. How do we revoke active refresh tokens, investigate Azure sign-in logs, and secure the O365 tenant?',
+  },
+  {
+    title: 'Digital Arrest Extortion FIR & Freeze',
+    icon: Scale,
+    badge: 'CRITICAL',
+    prompt:
+      'A victim is currently under coercion in a fake CBI / Narcotics Bureau "Digital Arrest" Skype call and transferred ₹4.8 Lakh to an alleged RBI escrow account. Draft an urgent 1930 Cyber Crime Helpline FIR brief and immediate bank account freeze request under Section 66D IT Act.',
+  },
+  {
+    title: 'In-Memory Process Injection Analysis',
+    icon: FileCode,
+    badge: 'HIGH RISK',
+    prompt:
+      'Sysmon Event ID 8 shows CreateRemoteThread with VirtualAllocEx RWX permissions into explorer.exe. How do I dump the unbacked injected memory section and analyze it using Volatility and YARA?',
   },
   {
     title: 'Sec 65B Certificate Guide',
     icon: Scale,
+    badge: 'LEGAL',
     prompt:
-      'What are the mandatory legal requirements under Section 65B of the Indian Evidence Act for admissible digital proof?',
+      'What are the mandatory legal requirements under Section 65B of the Indian Evidence Act / Section 63 BNS for admissible digital hash evidence in court?',
   },
   {
-    title: 'Generate YARA Rule',
-    icon: Shield,
+    title: 'Deconstruct Spoofed Email Headers',
+    icon: Terminal,
+    badge: 'ANALYSIS',
     prompt:
-      'Write a template YARA rule to detect ransomware executable patterns with suspicious high entropy sections.',
+      'Explain how to analyze RFC 822 Received: hop headers, SPF softfail, and DKIM signature failures in a spear-phishing wire transfer attack.',
   },
 ];
 
@@ -197,7 +215,7 @@ IoCs Found: ${activeArtifact.analysis.iocsFound.join(', ')}`;
                 AEGIS-AI ASSISTANT
               </h2>
               <span className="bg-orange-950 text-orange-400 border border-orange-800 text-[9px] font-bold px-1.5 py-0.5 uppercase tracking-widest">
-                GEMINI 3.6
+                CFL INTELLIGENCE
               </span>
             </div>
             <p className="text-[10px] text-zinc-500 font-medium">
@@ -261,7 +279,7 @@ IoCs Found: ${activeArtifact.analysis.iocsFound.join(', ')}`;
 
       {/* Quick Prompts Bar */}
       {messages.length <= 2 && (
-        <div className="p-4 bg-[#080808] border-b border-zinc-900 grid grid-cols-1 sm:grid-cols-2 gap-2 font-mono">
+        <div className="p-4 bg-[#080808] border-b border-zinc-900 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 font-mono">
           {QUICK_PROMPTS.map((qp, idx) => {
             const Icon = qp.icon;
             return (
@@ -270,12 +288,21 @@ IoCs Found: ${activeArtifact.analysis.iocsFound.join(', ')}`;
                 onClick={() => handleSendMessage(qp.prompt)}
                 className="p-2.5 bg-[#050505] border border-zinc-800 hover:border-orange-600 text-left transition-colors cursor-pointer flex items-center space-x-2.5 group"
               >
-                <div className="p-1 bg-zinc-900 group-hover:bg-orange-600 text-zinc-400 group-hover:text-white transition-colors">
+                <div className="p-1 bg-zinc-900 group-hover:bg-orange-600 text-zinc-400 group-hover:text-white transition-colors shrink-0">
                   <Icon className="w-3.5 h-3.5" />
                 </div>
-                <div className="truncate">
-                  <div className="text-[10px] font-black uppercase text-zinc-200 group-hover:text-orange-400">
-                    {qp.title}
+                <div className="truncate flex-1">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-[10px] font-black uppercase text-zinc-200 group-hover:text-orange-400 truncate">
+                      {qp.title}
+                    </span>
+                    <span className={`text-[8px] px-1 py-0.2 rounded font-black shrink-0 ${
+                      qp.badge === 'CRITICAL' ? 'bg-red-950/80 text-red-400 border border-red-800' :
+                      qp.badge === 'HIGH RISK' ? 'bg-amber-950/80 text-amber-400 border border-amber-800' :
+                      'bg-zinc-800 text-zinc-400'
+                    }`}>
+                      {qp.badge}
+                    </span>
                   </div>
                   <div className="text-[9px] text-zinc-500 truncate">{qp.prompt}</div>
                 </div>

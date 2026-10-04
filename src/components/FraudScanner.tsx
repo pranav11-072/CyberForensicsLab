@@ -149,23 +149,42 @@ export const FraudScanner: React.FC<FraudScannerProps> = ({ onSaveEvidence, save
       {/* Preset Selector */}
       {fraudPresets.length > 0 && (
         <div className="bg-[#0E0E0E] border border-zinc-900 p-5 space-y-3">
-          <div className="text-[10px] font-black font-mono tracking-[0.2em] uppercase text-zinc-400 flex items-center gap-2">
-            <Info className="w-3.5 h-3.5 text-orange-600" />
-            <span>LOAD FRAUD SCENARIO SAMPLES:</span>
+          <div className="text-[10px] font-black font-mono tracking-[0.2em] uppercase text-zinc-400 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Info className="w-3.5 h-3.5 text-orange-600" />
+              <span>LOAD REAL-WORLD HIGH-RISK FINANCIAL SCAM & FRAUD SCENARIOS:</span>
+            </div>
+            <span className="text-[9px] text-zinc-500 font-normal">Select an extortion or scam message to inspect</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {fraudPresets.map((preset) => (
-              <button
-                key={preset.id}
-                onClick={() => handleSelectPreset(preset.content)}
-                className="text-left p-3 bg-[#050505] hover:border-orange-600 border border-zinc-800 text-xs space-y-1 transition-colors group cursor-pointer"
-              >
-                <div className="font-bold uppercase tracking-tight text-white group-hover:text-orange-500 truncate font-mono">
-                  {preset.title}
-                </div>
-                <div className="text-[10px] text-zinc-500 font-mono truncate">{preset.subtitle}</div>
-              </button>
-            ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {fraudPresets.map((preset) => {
+              const isSelected = inputText === preset.content;
+              return (
+                <button
+                  key={preset.id}
+                  onClick={() => handleSelectPreset(preset.content)}
+                  className={`text-left p-3 border text-xs space-y-1.5 transition-colors group cursor-pointer ${
+                    isSelected
+                      ? 'bg-zinc-900 border-orange-600 shadow-sm shadow-orange-600/20'
+                      : 'bg-[#050505] hover:border-orange-600/70 border-zinc-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-1.5">
+                    <span className="font-bold uppercase tracking-tight text-white group-hover:text-orange-500 truncate font-mono text-[11px]">
+                      {preset.title}
+                    </span>
+                    <span className={`text-[8px] px-1.5 py-0.5 rounded font-black shrink-0 ${
+                      preset.expectedVerdict === 'CRITICAL'
+                        ? 'bg-red-950/80 text-red-400 border border-red-800'
+                        : 'bg-amber-950/80 text-amber-400 border border-amber-800'
+                    }`}>
+                      {preset.expectedVerdict === 'CRITICAL' ? 'CRITICAL' : 'HIGH RISK'}
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-zinc-400 font-mono line-clamp-1">{preset.subtitle}</div>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
@@ -304,14 +323,14 @@ export const FraudScanner: React.FC<FraudScannerProps> = ({ onSaveEvidence, save
                   ) : (
                     <Sparkles className="w-4 h-4 text-orange-500" />
                   )}
-                  <span>{isAiLoading ? 'GENERATING AI FORENSIC DEEP-INSPECTION...' : 'RUN DEEP AI LLM FORENSIC INSPECTION'}</span>
+                  <span>{isAiLoading ? 'GENERATING FORENSIC DEEP-INSPECTION...' : 'RUN DEEP FORENSIC THREAT ASSESSMENT'}</span>
                 </button>
 
                 {aiBreakdown && (
                   <div className="bg-[#050505] border border-orange-800/60 p-4 space-y-2 text-xs font-mono text-zinc-200">
                     <div className="flex items-center gap-2 text-orange-400 font-bold text-[10px] uppercase tracking-widest border-b border-orange-950 pb-2">
                       <Bot className="w-4 h-4 text-orange-500" />
-                      <span>GEMINI 3.6 FLASH LLM FORENSIC BREAKDOWN</span>
+                      <span>EXPERT FORENSIC THREAT ASSESSMENT & LEGAL STATUTES</span>
                     </div>
                     <div className="whitespace-pre-wrap leading-relaxed font-sans text-xs text-zinc-300 pt-1">
                       {aiBreakdown}

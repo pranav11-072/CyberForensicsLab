@@ -186,20 +186,31 @@ export const HashReputation: React.FC = () => {
                 placeholder="Enter MD5, SHA-1, SHA-256, or malware family name..."
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs font-mono text-cyan-300 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500"
               />
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                <span className="text-[10px] font-mono text-slate-500 self-center">Try Sample:</span>
-                {KNOWN_THREAT_IOCS.slice(0, 4).map((ioc) => (
-                  <button
-                    key={ioc.id}
-                    onClick={() => {
-                      setHashInput(ioc.sha256);
-                      runHashLookup(ioc.sha256);
-                    }}
-                    className="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700"
-                  >
-                    {ioc.family}
-                  </button>
-                ))}
+              <div className="pt-2 space-y-1.5">
+                <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-300 font-bold">
+                  <Flame className="w-3.5 h-3.5 text-rose-500" />
+                  <span>High-Risk Threat Signatures (Click to inspect):</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {KNOWN_THREAT_IOCS.map((ioc) => (
+                    <button
+                      key={ioc.id}
+                      onClick={() => {
+                        setHashInput(ioc.sha256);
+                        runHashLookup(ioc.sha256);
+                      }}
+                      className={`text-[10px] font-mono px-2 py-1 rounded-lg border transition flex items-center gap-1.5 ${
+                        hashInput.toLowerCase() === ioc.sha256.toLowerCase()
+                          ? 'bg-rose-950/40 border-rose-500 text-rose-300'
+                          : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700'
+                      }`}
+                    >
+                      <span className={`w-1.5 h-1.5 rounded-full ${ioc.severity === 'CRITICAL' ? 'bg-rose-500' : 'bg-amber-500'}`}></span>
+                      <span className="font-bold">{ioc.family}</span>
+                      <span className="text-[9px] text-slate-400 font-normal">({ioc.type})</span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

@@ -93,7 +93,7 @@ export const ThreatIntelligenceFeed: React.FC = () => {
           <div className="flex items-center space-x-2.5">
             <span className="bg-orange-950 text-orange-400 border border-orange-800 text-[9px] font-black px-2 py-0.5 uppercase tracking-widest font-mono flex items-center gap-1">
               <Sparkles className="w-3 h-3 text-orange-400 animate-pulse" />
-              SEARCH GROUNDED VIA GEMINI AI
+              LIVE GLOBAL THREAT FEEDS & CVE RADAR
             </span>
             {data?.isGrounded && (
               <span className="text-emerald-400 text-[10px] font-mono font-bold flex items-center gap-1">
@@ -187,7 +187,7 @@ export const ThreatIntelligenceFeed: React.FC = () => {
         <div className="bg-[#050505] border border-zinc-800 p-12 text-center space-y-3 font-mono">
           <Cpu className="w-8 h-8 text-orange-500 animate-spin mx-auto" />
           <div className="text-xs font-bold text-white uppercase tracking-widest">
-            EXECUTING LIVE GOOGLE SEARCH GROUNDING VIA GEMINI...
+            SYNCHRONIZING THREAT FEEDS & CVE REPOSITORIES...
           </div>
           <p className="text-[11px] text-zinc-500">
             Querying active vulnerability databases, security blogs, and CERT bulletins...

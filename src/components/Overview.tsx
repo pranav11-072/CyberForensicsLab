@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { AnalysisResult, ModuleType } from '../types';
 import { runForensicAnalysis } from '../utils/engine';
+import { SAMPLE_PRESETS } from '../data/presets';
 import { ThreatIntelligenceFeed } from './ThreatIntelligenceFeed';
 
 interface OverviewProps {
@@ -174,7 +175,29 @@ export const Overview: React.FC<OverviewProps> = ({
             className="w-full h-32 bg-[#050505] border border-zinc-800 p-4 text-xs font-mono text-zinc-100 focus:outline-none focus:border-orange-600 placeholder:text-zinc-600 resize-none"
           ></textarea>
 
-          <div className="flex flex-wrap justify-between items-center gap-3">
+          {/* Quick High-Risk Presets Row */}
+          <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+            <span className="text-zinc-500 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-orange-600 animate-pulse"></span>
+              High-Risk {selectedModule.toUpperCase()} Samples:
+            </span>
+            {SAMPLE_PRESETS.filter((p) => p.module === selectedModule).map((preset) => (
+              <button
+                key={preset.id}
+                onClick={() => setQuickInput(preset.content)}
+                className={`px-2.5 py-1 text-[10px] font-mono border transition flex items-center gap-1.5 cursor-pointer ${
+                  quickInput === preset.content
+                    ? 'bg-orange-950/60 border-orange-600 text-orange-300 font-bold'
+                    : 'bg-[#050505] border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700'
+                }`}
+              >
+                <span className={`w-1 h-1 rounded-full ${preset.expectedVerdict === 'CRITICAL' ? 'bg-red-500' : 'bg-amber-500'}`}></span>
+                <span className="truncate max-w-[170px]">{preset.title}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap justify-between items-center gap-3 pt-1 border-t border-zinc-900">
             <span className="text-[11px] text-zinc-500 font-mono">
               Evaluating input against 12 {selectedModule.toUpperCase()} regex signature rules locally.
             </span>

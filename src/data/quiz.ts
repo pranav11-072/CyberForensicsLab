@@ -146,4 +146,32 @@ Received-SPF: fail (domain of hdfcbank.com does not designate 185.220.101.4 as p
     explanation: 'Stratum is the standard protocol for crypto mining pools. SupportXMR is a known Monero pool used by unauthorized cryptojacking malware.',
     legalContext: 'IT Act Sec 43 & IPC Sec 379.',
   },
+  {
+    id: 'Q11',
+    module: 'phishing',
+    title: 'Adversary-in-the-Middle (AiTM) Reverse Proxy Attacks',
+    scenario: 'An employee enters their username, password, and approves their mobile Microsoft Authenticator prompt on an unverified link. The attacker still compromises the account without needing the password again. How is this possible?',
+    options: [
+      { id: 'a', text: 'The attacker cracked the user’s master password hash using rainbow tables.', isCorrect: false },
+      { id: 'b', text: 'The attacker deployed an AiTM reverse-proxy (e.g., Evilginx) that proxied traffic to the real login service and stole the authenticated ESTSAUTH session cookies.', isCorrect: true },
+      { id: 'c', text: 'The user’s phone SIM card was automatically cloned over WiFi.', isCorrect: false },
+      { id: 'd', text: 'Multi-factor authentication was disabled by Microsoft.', isCorrect: false },
+    ],
+    explanation: 'AiTM reverse-proxies act as transparent relays between the victim and legitimate identity provider, capturing authenticated session cookies and bypassing standard MFA.',
+    legalContext: 'IT Act Sec 66C (Identity Theft) & Sec 66D.',
+  },
+  {
+    id: 'Q12',
+    module: 'malware',
+    title: 'Process Injection & Memory Section Artifacts',
+    scenario: 'Sysmon Event ID 8 shows powershell.exe invoking VirtualAllocEx with PAGE_EXECUTE_READWRITE permissions and spawning CreateRemoteThread targeting explorer.exe (PID 3420). What technique is being executed?',
+    options: [
+      { id: 'a', text: 'Standard Windows shell desktop refresh.', isCorrect: false },
+      { id: 'b', text: 'In-Memory Process Injection (MITRE ATT&CK T1055) to conceal malicious code within a legitimate Windows process.', isCorrect: true },
+      { id: 'c', text: 'Antivirus signature database automatic update.', isCorrect: false },
+      { id: 'd', text: 'File system disk defragmentation.', isCorrect: false },
+    ],
+    explanation: 'Allocating RWX memory in a remote process and creating a remote thread is the classic signature of process hollowing and in-memory payload injection.',
+    legalContext: 'IT Act Sec 43 & Sec 66.',
+  },
 ];

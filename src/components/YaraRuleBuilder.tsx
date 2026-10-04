@@ -12,35 +12,143 @@ import {
   AlertTriangle,
   Code2,
   Terminal,
-  Layers
+  Layers,
+  Flame
 } from 'lucide-react';
 import { CustomYaraRule, SeverityLevel } from '../types';
 
-const INITIAL_RULE: CustomYaraRule = {
-  id: 'YARA-RANSOM-01',
-  ruleName: 'Detect_Ransomware_Shadow_Deletion',
-  meta: {
-    author: 'CFL Incident Response Team',
-    description: 'Detects execution of shadow copy deletion and recovery impairment commands.',
-    date: '2026-08-30',
-    severity: 'CRITICAL',
-    reference: 'MITRE ATT&CK T1490',
-    mitreId: 'T1490',
-  },
-  strings: [
-    { id: '1', identifier: '$vss', value: 'vssadmin delete shadows', type: 'text', modifiers: 'nocase' },
-    { id: '2', identifier: '$bcd', value: 'bcdedit /set {default} recoveryenabled no', type: 'text', modifiers: 'nocase' },
-    { id: '3', identifier: '$wbadmin', value: 'wbadmin delete catalog', type: 'text', modifiers: 'nocase' },
-    { id: '4', identifier: '$hex_marker', value: '4c 6f 63 6b 42 69 74', type: 'hex', modifiers: '' },
-  ],
-  condition: 'any of ($vss, $bcd, $wbadmin) or $hex_marker',
-};
-
-const SAMPLE_PAYLOAD = `[Sysmon Process Creation]
+const HIGH_RISK_YARA_TEMPLATES: {
+  id: string;
+  name: string;
+  badge: 'CRITICAL' | 'HIGH_RISK';
+  technique: string;
+  rule: CustomYaraRule;
+  samplePayload: string;
+}[] = [
+  {
+    id: 'YARA-RANSOM-01',
+    name: 'Ransomware Shadow Deletion (T1490)',
+    badge: 'CRITICAL',
+    technique: 'MITRE ATT&CK T1490',
+    rule: {
+      id: 'YARA-RANSOM-01',
+      ruleName: 'Detect_Ransomware_Shadow_Deletion',
+      meta: {
+        author: 'CFL Incident Response Team',
+        description: 'Detects execution of shadow copy deletion and recovery impairment commands.',
+        date: '2026-09-29',
+        severity: 'CRITICAL',
+        reference: 'MITRE ATT&CK T1490',
+        mitreId: 'T1490',
+      },
+      strings: [
+        { id: '1', identifier: '$vss', value: 'vssadmin delete shadows', type: 'text', modifiers: 'nocase' },
+        { id: '2', identifier: '$bcd', value: 'bcdedit /set {default} recoveryenabled no', type: 'text', modifiers: 'nocase' },
+        { id: '3', identifier: '$wbadmin', value: 'wbadmin delete catalog', type: 'text', modifiers: 'nocase' },
+        { id: '4', identifier: '$hex_marker', value: '4c 6f 63 6b 42 69 74', type: 'hex', modifiers: '' },
+      ],
+      condition: 'any of ($vss, $bcd, $wbadmin) or $hex_marker',
+    },
+    samplePayload: `[Sysmon Process Creation]
 Image: C:\\Windows\\System32\\cmd.exe
 CommandLine: cmd.exe /c vssadmin delete shadows /all /quiet & bcdedit /set {default} recoveryenabled no
 User: NT AUTHORITY\\SYSTEM
-Hashes: SHA256=4aa97b1897d2fa95ffecabaf6a70e7e1f40aa96ef784260d705c92c9066bf631`;
+Hashes: SHA256=4aa97b1897d2fa95ffecabaf6a70e7e1f40aa96ef784260d705c92c9066bf631
+Note: Dropped LockBit encryption identifier tag.`
+  },
+  {
+    id: 'YARA-COBALT-02',
+    name: 'Cobalt Strike Named Pipe & Injection (T1055)',
+    badge: 'CRITICAL',
+    technique: 'MITRE ATT&CK T1055',
+    rule: {
+      id: 'YARA-COBALT-02',
+      ruleName: 'Detect_CobaltStrike_NamedPipe_Injection',
+      meta: {
+        author: 'CFL Threat Hunting Unit',
+        description: 'Detects Cobalt Strike malleable C2 named pipes and in-memory thread injection artifacts.',
+        date: '2026-09-29',
+        severity: 'CRITICAL',
+        reference: 'MITRE ATT&CK T1055',
+        mitreId: 'T1055',
+      },
+      strings: [
+        { id: '1', identifier: '$pipe1', value: '\\\\.\\pipe\\msse-', type: 'text', modifiers: 'nocase' },
+        { id: '2', identifier: '$pipe2', value: '\\\\.\\pipe\\status_', type: 'text', modifiers: 'nocase' },
+        { id: '3', identifier: '$api1', value: 'VirtualAllocEx', type: 'text', modifiers: '' },
+        { id: '4', identifier: '$api2', value: 'CreateRemoteThread', type: 'text', modifiers: '' },
+      ],
+      condition: '($pipe1 or $pipe2) or ($api1 and $api2)',
+    },
+    samplePayload: `[EDR Thread Injection Alert]
+SourceProcess: powershell.exe (PID 5120)
+TargetProcess: explorer.exe (PID 3420)
+APIs: VirtualAllocEx called with PAGE_EXECUTE_READWRITE
+Thread: CreateRemoteThread spawned at 0x7FFB32191000
+NamedPipeCreated: \\\\.\\pipe\\msse-4401-server`
+  },
+  {
+    id: 'YARA-MIMIKATZ-03',
+    name: 'Mimikatz LSASS Password Harvesting (T1003)',
+    badge: 'CRITICAL',
+    technique: 'MITRE ATT&CK T1003.001',
+    rule: {
+      id: 'YARA-MIMIKATZ-03',
+      ruleName: 'Detect_Mimikatz_LSASS_MemoryDump',
+      meta: {
+        author: 'CFL Incident Response Team',
+        description: 'Detects execution of LSASS memory dumping utilities and Mimikatz credential extraction commands.',
+        date: '2026-09-29',
+        severity: 'CRITICAL',
+        reference: 'MITRE ATT&CK T1003.001',
+        mitreId: 'T1003.001',
+      },
+      strings: [
+        { id: '1', identifier: '$mimi1', value: 'sekurlsa::logonpasswords', type: 'text', modifiers: 'nocase' },
+        { id: '2', identifier: '$mimi2', value: 'lsadump::sam', type: 'text', modifiers: 'nocase' },
+        { id: '3', identifier: '$dump', value: 'procdump -ma lsass.exe', type: 'text', modifiers: 'nocase' },
+        { id: '4', identifier: '$ssp', value: 'misc::memssp', type: 'text', modifiers: 'nocase' },
+      ],
+      condition: 'any of ($mimi1, $mimi2, $dump, $ssp)',
+    },
+    samplePayload: `[Security Event ID 4688 - Process Creation]
+CreatorProcessName: C:\\Windows\\System32\\cmd.exe
+NewProcessName: C:\\Windows\\Temp\\procdump.exe
+CommandLine: procdump -ma lsass.exe C:\\Windows\\Temp\\lsass.dmp
+ParentCommandLine: powershell.exe -c "Invoke-Mimikatz; sekurlsa::logonpasswords"`
+  },
+  {
+    id: 'YARA-WEBSHELL-04',
+    name: 'China Chopper / Weevely Webshell (T1505)',
+    badge: 'HIGH_RISK',
+    technique: 'MITRE ATT&CK T1505.003',
+    rule: {
+      id: 'YARA-WEBSHELL-04',
+      ruleName: 'Detect_Webshell_ChinaChopper_Eval',
+      meta: {
+        author: 'CFL Threat Hunting Unit',
+        description: 'Detects single-line PHP eval webshells and base64 command execution parameters.',
+        date: '2026-09-29',
+        severity: 'HIGH_RISK',
+        reference: 'MITRE ATT&CK T1505.003',
+        mitreId: 'T1505.003',
+      },
+      strings: [
+        { id: '1', identifier: '$eval', value: 'eval(@$_POST[', type: 'text', modifiers: '' },
+        { id: '2', identifier: '$assert', value: 'assert($_POST[', type: 'text', modifiers: '' },
+        { id: '3', identifier: '$passthru', value: 'passthru(base64_decode', type: 'text', modifiers: 'nocase' },
+      ],
+      condition: 'any of ($eval, $assert, $passthru)',
+    },
+    samplePayload: `[Web Server Access Log & Script Inspect]
+File: /var/www/html/uploads/avatar_shell.php
+Content: <?php @eval(@$_POST['password_cmd_exec']); ?>
+Referer: http://compromised-target.com/uploads/`
+  }
+];
+
+const INITIAL_RULE: CustomYaraRule = HIGH_RISK_YARA_TEMPLATES[0].rule;
+const SAMPLE_PAYLOAD = HIGH_RISK_YARA_TEMPLATES[0].samplePayload;
 
 export const YaraRuleBuilder: React.FC = () => {
   const [rule, setRule] = useState<CustomYaraRule>(INITIAL_RULE);
@@ -213,6 +321,42 @@ ${conditionBlock}
               Export .YAR File
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* High-Risk YARA Rule Templates Selector */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2.5">
+        <div className="flex items-center gap-2 text-xs font-mono font-bold text-slate-300">
+          <Flame className="w-4 h-4 text-amber-500 animate-pulse" />
+          <span>LOAD HIGH-RISK YARA RULE & LIVE SANDBOX PAYLOAD TEMPLATES:</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+          {HIGH_RISK_YARA_TEMPLATES.map((tmpl) => (
+            <button
+              key={tmpl.id}
+              onClick={() => {
+                setRule(tmpl.rule);
+                setTestPayload(tmpl.samplePayload);
+                setTestResults(null);
+              }}
+              className={`p-2.5 rounded-xl border text-left font-mono transition text-xs flex flex-col justify-between gap-1.5 ${
+                rule.id === tmpl.id
+                  ? 'bg-slate-800 border-amber-500 shadow-md shadow-amber-500/10'
+                  : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center justify-between gap-1.5">
+                <span className="font-bold text-slate-200 text-[11px] truncate">{tmpl.name}</span>
+                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                  tmpl.badge === 'CRITICAL' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                }`}>
+                  {tmpl.badge}
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-400">{tmpl.technique}</span>
+              <span className="text-[9px] text-cyan-400">Loads Rule & Live Payload →</span>
+            </button>
+          ))}
         </div>
       </div>
 

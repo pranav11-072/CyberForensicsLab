@@ -17,15 +17,53 @@ import {
 import { NetworkLogEntry, SeverityLevel } from '../types';
 import { calculateShannonEntropy } from '../utils/forensicDecoders';
 
-const SAMPLE_LOGS = `2026-08-28 09:12:01 | 192.168.1.105:49152 -> 8.8.8.8:53 | DNS QUERY a9f8a10b4c2e17d983e02a.beacon-c2-drop.cc (Length: 512 bytes)
-2026-08-28 09:12:31 | 192.168.1.105:49152 -> 8.8.8.8:53 | DNS QUERY a9f8a10b4c2e17d983e02b.beacon-c2-drop.cc (Length: 512 bytes)
-2026-08-28 09:13:01 | 192.168.1.105:49152 -> 8.8.8.8:53 | DNS QUERY a9f8a10b4c2e17d983e02c.beacon-c2-drop.cc (Length: 512 bytes)
-2026-08-28 09:15:20 | 192.168.1.105:51204 -> 185.220.101.44:4444 | TCP SYN -> UNKNOWN SERVICE ON PORT 4444 (Metasploit Default)
-2026-08-28 09:18:45 | 192.168.1.140:53110 -> 10.0.0.5:445 | SMB2 Tree Connect -> \\\\10.0.0.5\\C$ (Admin Share Lateral Movement)
-2026-08-28 09:22:11 | 192.168.1.105:54902 -> 142.250.190.46:443 | HTTPS GET https://accounts.google.com/ (Standard Normal Traffic)`;
+const HIGH_RISK_SCENARIOS = [
+  {
+    id: 'c2_dga',
+    title: 'Critical C2 DNS Beaconing & Metasploit Shell',
+    badge: 'CRITICAL',
+    logs: `2026-09-29 09:12:01 | 192.168.1.105:49152 -> 8.8.8.8:53 | DNS QUERY a9f8a10b4c2e17d983e02a.beacon-c2-drop.cc (Length: 512 bytes)
+2026-09-29 09:12:31 | 192.168.1.105:49152 -> 8.8.8.8:53 | DNS QUERY a9f8a10b4c2e17d983e02b.beacon-c2-drop.cc (Length: 512 bytes)
+2026-09-29 09:13:01 | 192.168.1.105:49152 -> 8.8.8.8:53 | DNS QUERY a9f8a10b4c2e17d983e02c.beacon-c2-drop.cc (Length: 512 bytes)
+2026-09-29 09:15:20 | 192.168.1.105:51204 -> 185.220.101.44:4444 | TCP SYN -> UNKNOWN SERVICE ON PORT 4444 (Metasploit Default)
+2026-09-29 09:18:45 | 192.168.1.140:53110 -> 10.0.0.5:445 | SMB2 Tree Connect -> \\\\10.0.0.5\\C$ (Admin Share Lateral Movement)
+2026-09-29 09:22:11 | 192.168.1.105:54902 -> 142.250.190.46:443 | HTTPS GET https://accounts.google.com/ (Standard Normal Traffic)`
+  },
+  {
+    id: 'ransom_lateral',
+    title: 'Ransomware Mass SMB Propagation & Veeam Kill',
+    badge: 'CRITICAL',
+    logs: `2026-09-29 03:14:10 | 10.0.0.12:49811 -> 10.0.0.5:445 | SMB2 Tree Connect -> \\\\10.0.0.5\\ADMIN$\\System32\\PSEXESVC.exe
+2026-09-29 03:14:18 | 10.0.0.12:49812 -> 10.0.0.8:445 | SMB2 File Write -> \\\\10.0.0.8\\C$\\Windows\\Temp\\locker_payload.exe
+2026-09-29 03:14:25 | 10.0.0.12:49813 -> 10.0.0.22:445 | SMB2 Tree Connect -> \\\\10.0.0.22\\C$\\BackupShare\\ (Veeam Storage)
+2026-09-29 03:15:02 | 10.0.0.12:51220 -> 185.220.101.89:8888 | TCP ESTABLISHED -> Active C2 Callback to Bulletproof IP
+2026-09-29 03:16:40 | 10.0.0.5:52100 -> 10.0.0.1:53 | DNS QUERY lockbit-pay-portal-v3.cc TXT (Length: 1024 bytes)`
+  },
+  {
+    id: 'dns_tunnel',
+    title: 'Covert Data Exfiltration via High-Entropy DNS Tunnel',
+    badge: 'HIGH RISK',
+    logs: `2026-09-29 11:02:14 | 172.16.4.88:60211 -> 1.1.1.1:53 | DNS QUERY dXNlcl9jcmVkZW50aWFsc19kYXRhYmFzZV9kdW1w.exfil-tunnel.top (Length: 1024 bytes)
+2026-09-29 11:02:16 | 172.16.4.88:60212 -> 1.1.1.1:53 | DNS QUERY cHJpdmF0ZV9rZXlzX3NhbWxfc2lnbmluZ19jZXJ0.exfil-tunnel.top (Length: 1024 bytes)
+2026-09-29 11:02:18 | 172.16.4.88:60213 -> 1.1.1.1:53 | DNS QUERY bGlzdF9vZiRfZW1wbG95ZWVfc3NuX2Jhbmtpbmc=.exfil-tunnel.top (Length: 1024 bytes)
+2026-09-29 11:05:00 | 172.16.4.88:58440 -> 194.26.29.110:31337 | TCP SYN -> High Port Backdoor Listener on Suspicious Subnet
+2026-09-29 11:07:30 | 172.16.4.10:54110 -> 172.16.4.1:80 | HTTP GET http://internal-intranet.local/ (Legitimate Intranet)`
+  },
+  {
+    id: 'recon_sweep',
+    title: 'Internal Subnet Port Sweep & Kerberoasting Probe',
+    badge: 'HIGH RISK',
+    logs: `2026-09-29 08:30:11 | 192.168.1.55:41201 -> 192.168.1.10:88 | TCP SYN -> Port 88 Kerberos TGS-REQ Request (RC4 Encryption Probe)
+2026-09-29 08:30:12 | 192.168.1.55:41202 -> 192.168.1.10:389 | TCP SYN -> Port 389 LDAP Active Directory Schema Dump
+2026-09-29 08:30:15 | 192.168.1.55:41205 -> 192.168.1.10:3389 | TCP SYN -> Port 3389 Remote Desktop Protocol Brute Attempt
+2026-09-29 08:32:00 | 192.168.1.55:54999 -> 185.220.101.5:1337 | TCP SYN -> Connection to Tor Exit Node on Backdoor Port 1337
+2026-09-29 08:35:10 | 192.168.1.20:51000 -> 8.8.8.8:53 | DNS QUERY www.microsoft.com (Normal Routine Resolution)`
+  }
+];
 
 export const NetworkFlowInspector: React.FC = () => {
-  const [rawLogs, setRawLogs] = useState<string>(SAMPLE_LOGS);
+  const [rawLogs, setRawLogs] = useState<string>(HIGH_RISK_SCENARIOS[0].logs);
+  const [selectedScenarioId, setSelectedScenarioId] = useState<string>(HIGH_RISK_SCENARIOS[0].id);
   const [parsedEntries, setParsedEntries] = useState<NetworkLogEntry[]>([]);
   const [filterSeverity, setFilterSeverity] = useState<SeverityLevel | 'ALL'>('ALL');
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -167,6 +205,41 @@ export const NetworkFlowInspector: React.FC = () => {
             <Sparkles className="w-4 h-4" />
             Analyze & Score Stream
           </button>
+        </div>
+      </div>
+
+      {/* High-Risk Preset Scenarios Bar */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2.5">
+        <div className="flex items-center gap-2 text-xs font-mono font-bold text-slate-300">
+          <Flame className="w-4 h-4 text-orange-500 animate-pulse" />
+          <span>LOAD HIGH-RISK NETWORK ATTACK SCENARIOS:</span>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+          {HIGH_RISK_SCENARIOS.map((sc) => (
+            <button
+              key={sc.id}
+              onClick={() => {
+                setSelectedScenarioId(sc.id);
+                setRawLogs(sc.logs);
+                setTimeout(() => analyzeNetworkLogs(), 50);
+              }}
+              className={`p-2.5 rounded-xl border text-left font-mono transition text-xs flex flex-col justify-between gap-1.5 ${
+                selectedScenarioId === sc.id
+                  ? 'bg-slate-800 border-cyan-500 shadow-md shadow-cyan-500/10'
+                  : 'bg-slate-950/60 border-slate-800 hover:border-slate-700'
+              }`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-bold text-slate-200 text-[11px] truncate">{sc.title}</span>
+                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
+                  sc.badge === 'CRITICAL' ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                }`}>
+                  {sc.badge}
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-400">Click to ingest & score live</span>
+            </button>
+          ))}
         </div>
       </div>
 
