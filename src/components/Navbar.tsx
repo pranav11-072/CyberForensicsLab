@@ -9,7 +9,7 @@ import {
   Cpu,
   GraduationCap,
   Activity,
-  WifiOff,
+  Sparkles,
   Clock,
   Bot,
   Globe,
@@ -58,10 +58,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, savedEv
           </span>
           <span className="text-zinc-800">|</span>
           <span className="flex items-center text-zinc-300 font-mono">
-            <WifiOff className="w-3 h-3 mr-1 text-orange-600" /> AIR-GAPPED // LOCAL ENGINE ACTIVE
+            <Sparkles className="w-3 h-3 mr-1 text-orange-600" /> GEMINI AI // CLOUD INTELLIGENCE ACTIVE
           </span>
           <span className="hidden md:inline text-zinc-800">|</span>
-          <span className="hidden md:inline text-zinc-400 font-mono">45+ DETERMINISTIC HEURISTIC RULES</span>
+          <span className="hidden md:inline text-zinc-400 font-mono">36 HEURISTIC RULES + AI TRIAGE</span>
         </div>
 
         <div className="flex items-center space-x-4 font-mono text-zinc-400">

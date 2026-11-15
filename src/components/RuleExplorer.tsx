@@ -52,7 +52,7 @@ export const RuleExplorer: React.FC = () => {
               Forensic Pattern Rule Engine<span className="text-orange-600">.</span>
             </h1>
             <p className="text-xs text-zinc-400 font-medium mt-0.5">
-              Inspect the 36 deterministic pattern-matching rules powering offline phishing, malware, and fraud detection.
+              Inspect the 36 deterministic pattern-matching rules powering phishing, malware, and fraud detection alongside Gemini AI deep inspection.
             </p>
           </div>
         </div>

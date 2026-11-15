@@ -14,6 +14,7 @@ import {
   Scale,
   Cpu,
   GraduationCap,
+  Sparkles,
 } from 'lucide-react';
 import { AnalysisResult, ModuleType } from '../types';
 import { runForensicAnalysis } from '../utils/engine';
@@ -61,8 +62,8 @@ export const Overview: React.FC<OverviewProps> = ({
           <div className="flex items-center gap-3">
             <span className="w-12 h-[1px] bg-orange-600"></span>
             <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-orange-600 flex items-center gap-1.5">
-              <Lock className="w-3 h-3" />
-              100% AIR-GAPPED // DETERMINISTIC ENGINE
+              <Sparkles className="w-3 h-3" />
+              GEMINI AI // HYBRID FORENSIC ENGINE
             </span>
           </div>
 
@@ -72,7 +73,7 @@ export const Overview: React.FC<OverviewProps> = ({
           </h1>
 
           <p className="text-zinc-400 text-sm md:text-base leading-relaxed max-w-2xl font-medium">
-            Perform offline forensic inspection of suspicious emails, URLs, malware command logs, and financial scam communications using <span className="text-white font-bold">36 deterministic pattern rules</span>. Generates legal section mappings (IT Act & IPC) and Section 65B Evidence Certificates.
+            Perform AI-assisted forensic inspection of suspicious emails, URLs, malware command logs, and financial scam communications powered by <span className="text-white font-bold">Gemini AI</span> and <span className="text-white font-bold">36 deterministic pattern rules</span>. Generates legal section mappings (IT Act & IPC) and Section 65B Evidence Certificates.
           </p>
 
           <div className="flex flex-wrap gap-4 pt-4">
@@ -114,11 +115,11 @@ export const Overview: React.FC<OverviewProps> = ({
 
         <div className="bg-[#0E0E0E] border border-zinc-900 p-5 space-y-2">
           <div className="flex items-center justify-between text-zinc-500 text-[10px] font-bold tracking-[0.2em] uppercase">
-            <span>NETWORK</span>
-            <Lock className="w-4 h-4 text-emerald-500" />
+            <span>AI ENGINE</span>
+            <Sparkles className="w-4 h-4 text-emerald-500" />
           </div>
-          <div className="text-4xl font-black text-white tracking-tighter font-mono">0 API</div>
-          <p className="text-[11px] text-zinc-500 font-mono">100% offline local evaluation</p>
+          <div className="text-4xl font-black text-white tracking-tighter font-mono">GEMINI</div>
+          <p className="text-[11px] text-zinc-500 font-mono">Live threat triage &amp; copilot</p>
         </div>
 
         <div className="bg-[#0E0E0E] border border-zinc-900 p-5 space-y-2">
@@ -199,7 +200,7 @@ export const Overview: React.FC<OverviewProps> = ({
 
           <div className="flex flex-wrap justify-between items-center gap-3 pt-1 border-t border-zinc-900">
             <span className="text-[11px] text-zinc-500 font-mono">
-              Evaluating input against 12 {selectedModule.toUpperCase()} regex signature rules locally.
+              Evaluating input against 12 {selectedModule.toUpperCase()} forensic signature rules with Gemini deep inspection available.
             </span>
             <button
               onClick={handleQuickScan}

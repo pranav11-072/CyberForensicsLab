@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, WifiOff, Scale, Lock } from 'lucide-react';
+import { Shield, Sparkles, Scale, Lock } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -11,14 +11,14 @@ export const Footer: React.FC = () => {
               <Shield className="w-4 h-4 text-orange-600" />
             </div>
             <div>
-              <div className="font-black text-xs text-white tracking-widest">CYBER FORENSICS LAB<span className="text-orange-600">.</span> AIR-GAPPED</div>
-              <p className="text-[9px] text-zinc-600 tracking-widest mt-0.5">DETERMINISTIC RULE ENGINE // V2.4</p>
+              <div className="font-black text-xs text-white tracking-widest">CYBER FORENSICS LAB<span className="text-orange-600">.</span> AI</div>
+              <p className="text-[9px] text-zinc-600 tracking-widest mt-0.5">HYBRID AI &amp; RULE ENGINE // V2.4</p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-6 text-[10px] tracking-[0.2em] text-zinc-400">
             <span className="flex items-center text-emerald-400">
-              <WifiOff className="w-3.5 h-3.5 mr-1.5 text-orange-600" /> 100% OFFLINE
+              <Sparkles className="w-3.5 h-3.5 mr-1.5 text-orange-600" /> GEMINI AI POWERED
             </span>
             <span className="text-zinc-800">|</span>
             <span className="flex items-center text-purple-400">
@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
             </span>
             <span className="text-zinc-800">|</span>
             <span className="flex items-center text-orange-500">
-              <Lock className="w-3.5 h-3.5 mr-1.5 text-orange-600" /> ZERO LEAKS
+              <Lock className="w-3.5 h-3.5 mr-1.5 text-orange-600" /> SECURE TRIAGE
             </span>
           </div>
         </div>
