@@ -11,15 +11,8 @@ import {
   Activity,
   WifiOff,
   Clock,
-  CheckCircle2,
   Bot,
-  Binary,
-  Radio,
-  ShieldCheck,
-  FileCode,
   Globe,
-  Flame,
-  Layers,
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -46,11 +39,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, savedEv
     { id: 'phishing', label: 'Phishing', icon: Fish },
     { id: 'malware', label: 'Malware', icon: Bug },
     { id: 'fraud', label: 'Fraud', icon: CreditCard },
-    { id: 'decoders', label: 'Decoders', icon: Binary, isNew: true },
-    { id: 'timeline', label: 'Timeline', icon: Clock, isNew: true },
-    { id: 'network', label: 'Network Flow', icon: Radio, isNew: true },
-    { id: 'hashes', label: 'Hash Matcher', icon: ShieldCheck, isNew: true },
-    { id: 'yara', label: 'YARA Builder', icon: FileCode, isNew: true },
     { id: 'intel', label: 'Threat Feed', icon: Globe },
     { id: 'chatbot', label: 'AI Copilot', icon: Bot, isAi: true },
     { id: 'cases', label: 'Cases', icon: BookOpen },
@@ -70,7 +58,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, savedEv
           </span>
           <span className="text-zinc-800">|</span>
           <span className="flex items-center text-zinc-300 font-mono">
-            <WifiOff className="w-3 h-3 mr-1 text-orange-600" /> AIR-GAPPED // LOCAL DECODERS ACTIVE
+            <WifiOff className="w-3 h-3 mr-1 text-orange-600" /> AIR-GAPPED // LOCAL ENGINE ACTIVE
           </span>
           <span className="hidden md:inline text-zinc-800">|</span>
           <span className="hidden md:inline text-zinc-400 font-mono">45+ DETERMINISTIC HEURISTIC RULES</span>
@@ -125,11 +113,6 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab, savedEv
                 >
                   <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-orange-600' : 'text-zinc-500'}`} />
                   <span>{item.label}</span>
-                  {item.isNew && (
-                    <span className="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-[8px] px-1 py-0.2 rounded font-mono font-bold">
-                      NEW
-                    </span>
-                  )}
                   {item.badge !== undefined && item.badge > 0 && (
                     <span className="ml-0.5 bg-orange-600 text-white font-black text-[9px] px-1.5 py-0.2 rounded-none">
                       {item.badge}

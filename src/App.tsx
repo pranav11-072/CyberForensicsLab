@@ -10,14 +10,9 @@ import { RuleExplorer } from './components/RuleExplorer';
 import { TrainingHub } from './components/TrainingHub';
 import { CyberBot } from './components/CyberBot';
 import { ThreatIntelligenceFeed } from './components/ThreatIntelligenceFeed';
-import { ForensicDecoders } from './components/ForensicDecoders';
-import { IncidentTimeline } from './components/IncidentTimeline';
-import { NetworkFlowInspector } from './components/NetworkFlowInspector';
-import { HashReputation } from './components/HashReputation';
-import { YaraRuleBuilder } from './components/YaraRuleBuilder';
 import { Footer } from './components/Footer';
 import { AnalysisResult } from './types';
-import { Bot, Sparkles, X } from 'lucide-react';
+import { Bot } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('overview');
@@ -95,16 +90,6 @@ export default function App() {
             savedResults={savedEvidence}
           />
         )}
-
-        {activeTab === 'decoders' && <ForensicDecoders />}
-
-        {activeTab === 'timeline' && <IncidentTimeline />}
-
-        {activeTab === 'network' && <NetworkFlowInspector />}
-
-        {activeTab === 'hashes' && <HashReputation />}
-
-        {activeTab === 'yara' && <YaraRuleBuilder />}
 
         {activeTab === 'intel' && <ThreatIntelligenceFeed />}
 

@@ -447,25 +447,57 @@ ${detectedPatterns.map((p) => `  - ${p}`).join("\n")}
 * **Section 63 BSA / Section 65B Indian Evidence Act**: Mandatory preparation of an Electronic Evidence Certificate validating the SHA-256 hash integrity of all acquired evidence.`;
   }
 
-  // AI Cyber Forensics Chatbot Route
+  // AI Cyber Forensics Multi-Turn Chatbot Route
   app.post("/api/chat", async (req, res) => {
     try {
-      const { messages, systemContext } = req.body;
+      const { messages, systemContext, roleId, modelName } = req.body;
       const lastUserMsg = [...(messages || [])].reverse().find((m: { role: string }) => m.role === "user")?.content || "";
       const ai = getGenAI();
 
-      if (!ai) {
-        const reply = generateExpertForensicChatReply(lastUserMsg, systemContext);
-        return res.json({ reply, isFallback: false });
+      // Role Definitions & Specialized System Instructions
+      const ROLE_INSTRUCTIONS: Record<string, string> = {
+        investigator: `You are "Aegis Lead Forensic Investigator", an elite Digital Forensics and Incident Response (DFIR) specialist at the Cyber Forensics Lab (CFL).
+Your core mission is forensic triage, evidence reconstruction, volatile memory triage (WinPmem, Volatility 3), file system artifact decoding ($MFT, $LogFile, Prefetch, Shimcache), and malicious network flow analysis.
+Maintain strict evidence integrity under RFC 3227. Always provide step-by-step technical procedures, exact tool commands (Volatility, Procdump, YARA), SHA-256 validation guidelines, and actionable containment steps.`,
+
+        reverse_engineer: `You are "Aegis Malware Reverse Engineer", a Principal Binary Analyst & Shellcode Specialist at the Cyber Forensics Lab (CFL).
+Your expertise is static and dynamic malware analysis, assembly deconstruction (x86/x64), AMSI and ETW bypass analysis, process injection identification (CreateRemoteThread, APC Queue, Process Hollowing), obfuscated script decoding (PowerShell, VBScript, Batch), and production-grade YARA rule authoring.
+Provide exact opcode explanations, memory VAD analysis, C2 extraction signatures, and detection rules.`,
+
+        legal_counsel: `You are "Aegis Cyber Legal Counsel & Admissibility Specialist", a senior expert on Cyber Crime Law, Information Technology Act, 2000, and Bharatiya Sakshya Adhiniyam (BSA), 2023.
+Your focus is courtroom admissibility, drafting Section 65B Electronic Evidence Certificates (Section 63 BSA), establishing unbroken Chain of Custody, invoking statutory cyber crime penalties (IT Act Sections 43, 66, 66C, 66D, 70B; BNS Sections 318, 319, 308), CERT-In 6-hour reporting mandates, and emergency banking lien requests under Section 91 CrPC / Section 107 BNSS.
+Cite exact sections, judicial precedents (e.g. Arjun Khotkar v. Kailash Gorantyal), and statutory drafting templates.`,
+
+        threat_intel: `You are "Aegis Threat Intelligence & APT Attribution Specialist", an expert in cyber threat intelligence, MITRE ATT&CK mapping, and APT campaign tracking.
+Your focus is mapping indicators of compromise (IoCs) to known threat actors (APT28, APT29, Lazarus, LockBit 3.0, BlackCat), decoding C2 communication schemas, analyzing DGA patterns, and correlating telemetry across enterprise sensors.
+Format IoCs clearly with defanged URLs/IPs, MITRE ATT&CK technique IDs (e.g., T1059, T1490), and actionable Yara/Sigma rules.`
+      };
+
+      const selectedRole = roleId && ROLE_INSTRUCTIONS[roleId] ? roleId : "investigator";
+      const systemInstruction = ROLE_INSTRUCTIONS[selectedRole];
+
+      // Model Selection:
+      // gemini-3.1-pro-preview for particularly complex tasks
+      // gemini-3.5-flash for general tasks (default)
+      // gemini-3.1-flash-lite for tasks that should happen fast
+      let targetModel = "gemini-3.5-flash";
+      if (modelName === "gemini-3.1-pro-preview" || modelName === "complex") {
+        targetModel = "gemini-3.1-pro-preview";
+      } else if (modelName === "gemini-3.1-flash-lite" || modelName === "fast") {
+        targetModel = "gemini-3.1-flash-lite";
+      } else {
+        targetModel = "gemini-3.5-flash";
       }
 
-      const systemInstruction = `You are "Aegis AI", an elite Senior Cyber Crime Forensics Investigator & Legal Expert working for CFL (Cyber Forensics Lab).
-Your expertise covers:
-1. Digital Evidence Triage (Phishing email headers, malware shellcode, powershell obfuscation, suspicious transaction logs).
-2. Cyber Law & Statutes: Information Technology Act 2000 (Sec 65B, 66C, 66D, 43, 72), Bharatiya Nyaya Sanhita (BNS) provisions, and Indian Evidence Act.
-3. Forensics Best Practices: Chain of Custody, SHA-256 integrity hashing, YARA rules, STIX/TAXII IoCs, and Section 65B certificate drafting.
-
-Provide precise, structured, highly professional technical responses using clear markdown formatting, bullet points, code blocks for payloads/YARA rules, and statute references.`;
+      if (!ai) {
+        const reply = generateExpertForensicChatReply(lastUserMsg, systemContext);
+        return res.json({
+          reply,
+          modelUsed: targetModel,
+          roleUsed: selectedRole,
+          isFallback: false
+        });
+      }
 
       // Convert conversation history into model prompt format
       const formattedContents = (messages || []).map((msg: { role: string; content: string }) => ({
@@ -476,28 +508,40 @@ Provide precise, structured, highly professional technical responses using clear
       if (systemContext) {
         formattedContents.unshift({
           role: "user",
-          parts: [{ text: `[SYSTEM CONTEXT / EVIDENCE ARTIFACT ATTACHED]: ${systemContext}` }],
+          parts: [{ text: `[FORENSIC EVIDENCE CONTEXT ATTACHED]: ${systemContext}` }],
         });
       }
 
       try {
         const response = await ai.models.generateContent({
-          model: "gemini-2.5-flash",
+          model: targetModel,
           contents: formattedContents,
           config: {
             systemInstruction,
-            temperature: 0.2,
+            temperature: targetModel === "gemini-3.1-pro-preview" ? 0.1 : 0.2,
           },
         });
 
-        res.json({ reply: response.text || generateExpertForensicChatReply(lastUserMsg, systemContext) });
+        res.json({
+          reply: response.text || generateExpertForensicChatReply(lastUserMsg, systemContext),
+          modelUsed: targetModel,
+          roleUsed: selectedRole
+        });
       } catch (genErr) {
-        console.warn("AI generation failed, using expert forensic engine:", genErr);
-        res.json({ reply: generateExpertForensicChatReply(lastUserMsg, systemContext) });
+        console.warn("AI generation failed with target model, fallback to expert forensic engine:", genErr);
+        res.json({
+          reply: generateExpertForensicChatReply(lastUserMsg, systemContext),
+          modelUsed: targetModel,
+          roleUsed: selectedRole
+        });
       }
     } catch (error: any) {
       console.error("Chat API Error:", error);
-      res.json({ reply: generateExpertForensicChatReply("Incident triage") });
+      res.json({
+        reply: generateExpertForensicChatReply("Incident triage"),
+        modelUsed: "gemini-3.5-flash",
+        roleUsed: "investigator"
+      });
     }
   });
 
